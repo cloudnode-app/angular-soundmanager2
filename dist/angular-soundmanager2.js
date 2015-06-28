@@ -4735,10 +4735,15 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 return volume;
             },
             setVolume: function(newVolume) {
-                if (newVolume <= 100 && newVolume >= 0) {
-                    adjustVolumeSlider(newVolume);
-                    volume = newVolume;
-                }
+                var changeVolume = function(volume) {
+                    for(var i = 0; i < soundManager.soundIDs.length; i++) {
+                        var mySound = soundManager.getSoundById(soundManager.soundIDs[i]);
+                        mySound.setVolume(volume);
+                    }
+                    $rootScope.$broadcast('music:volume', volume);
+                };
+                volume = newVolume;
+                changeVolume(volume);
             },
             adjustVolume: function(increase) {
                 var changeVolume = function(volume) {
