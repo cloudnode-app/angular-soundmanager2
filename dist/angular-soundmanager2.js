@@ -4713,6 +4713,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 var currentTrackKey = this.getIndexByValue(soundManager.soundIDs, this.getCurrentTrack());
                 var mySound = soundManager.getSoundById(soundManager.soundIDs[currentTrackKey]);
 
+                mySound.setPosition(seekValue);
             },
             toggleRepeat: function() {
                 if(repeat === true) {
