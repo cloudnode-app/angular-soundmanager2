@@ -1,6 +1,6 @@
 ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
     function($rootScope, $log) {
-        
+
         var currentTrack = null,
             repeat = false,
             autoPlay = true,
@@ -8,7 +8,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             volume = 90,
             trackProgress = 0,
             playlist = [];
-        
+
         return {
             /**
              * Initialize soundmanager,
@@ -290,18 +290,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     $log.debug('no prev track found!');
                 }
             },
-            mute: function() {
-                if(soundManager.muted === true) {
-                    soundManager.unmute();
-                } else {
-                    soundManager.mute();
-                }
-                $rootScope.$broadcast('music:mute', soundManager.muted);
-            },
-            getMuteStatus: function() {
-                return soundManager.muted;
-            },
-            repeatToggle: function() {
+            toggleRepeat: function() {
                 if(repeat === true) {
                     repeat = false;
                 } else {
@@ -309,11 +298,28 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
                 $rootScope.$broadcast('music:repeat', repeat);
             },
-            getRepeatStatus: function() {
+            isRepeating: function() {
                 return repeat;
+            },
+            toggleMute: function() {
+                if(soundManager.muted === true) {
+                    soundManager.unmute();
+                } else {
+                    soundManager.mute();
+                }
+                $rootScope.$broadcast('music:mute', soundManager.muted);
+            },
+            isMuted: function() {
+                return soundManager.muted;
             },
             getVolume: function() {
                 return volume;
+            },
+            setVolume: function(newVolume) {
+                if (newVolume <= 100 && newVolume >= 0) {
+                    adjustVolumeSlider(newVolume);
+                    volume = newVolume;
+                }
             },
             adjustVolume: function(increase) {
                 var changeVolume = function(volume) {
