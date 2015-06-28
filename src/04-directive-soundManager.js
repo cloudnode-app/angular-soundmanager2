@@ -16,6 +16,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 });
                 scope.$on('currentTrack:duration', function(event, data) {
                         scope.currentDuration = $filter('humanTime')(data);
+                        scope.currentDurationSlider = data;
                 });
                 scope.isPlaying = false;
                 scope.$on('music:isPlaying', function(event, data) {

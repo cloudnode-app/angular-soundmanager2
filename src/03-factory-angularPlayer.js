@@ -290,6 +290,11 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     $log.debug('no prev track found!');
                 }
             },
+            seekCurrentTrack: function (seekValue) {
+                var currentTrackKey = this.getIndexByValue(soundManager.soundIDs, this.getCurrentTrack());
+                var mySound = soundManager.getSoundById(soundManager.soundIDs[currentTrackKey]);
+
+            },
             toggleRepeat: function() {
                 if(repeat === true) {
                     repeat = false;
