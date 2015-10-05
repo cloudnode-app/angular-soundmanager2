@@ -4410,10 +4410,18 @@ ngSoundManager.filter('humanTime', function () {
                 return (d < 10) ? '0' + d.toString() : d.toString();
             }
 
-            var min = (input / 1000 / 60) << 0,
-                sec = Math.round((input / 1000) % 60);
+            var ms = input % 1000;
+            input = (input - ms) / 1000;
+            var sec = input % 60;
+            input = (input - sec) / 60;
+            var min = input % 60;
+            var hrs = (input - min) / 60;
 
-            return pad(min) + ':' + pad(sec);
+            if (hrs > 0) {
+                return hrs + ':' + pad(min) + ':' + pad(sec);
+            } else {
+                return pad(min) + ':' + pad(sec);
+            }
         };
     });
 
@@ -4453,7 +4461,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     defaultOptions: {
                         // set global default volume for all sound objects
                         autoLoad: false, // enable automatic loading (otherwise .load() will call with .play())
-                        autoPlay: false, // enable playing of file ASAP (much faster if "stream" is true)
+                        autoPlay: true, // enable playing of file ASAP (much faster if "stream" is true)
                         from: null, // position to start playback within a sound (msec), see demo
                         loops: 1, // number of times to play the sound. Related: looping (API demo)
                         multiShot: false, // let sounds "restart" or "chorus" when played multiple times..
@@ -4495,13 +4503,13 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                             if(autoPlay === true) {
                                 //play next track if autoplay is on
                                 //get your angular app
-                                var elem = angular.element(document.querySelector('[ng-app]'));
+                                //var elem = angular.element(document.querySelector('[ng-app]'));
                                 //get the injector.
-                                var injector = elem.injector();
+                                //var injector = elem.injector();
                                 //get the service.
-                                var angularPlayer = injector.get('angularPlayer');
-                                angularPlayer.nextTrack();
-                                $rootScope.$broadcast('track:id', currentTrack);
+                                //var angularPlayer = injector.get('angularPlayer');
+                                //angularPlayer.nextTrack();
+                                $rootScope.$broadcast('track:finished', true);
                             }
                         }
                     }
@@ -4642,6 +4650,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             play: function() {
                 var trackToPlay = null;
                 //check if no track loaded, else play loaded track
+                console.log(this.getCurrentTrack());
                 if(this.getCurrentTrack() === null) {
                     if(soundManager.soundIDs.length === 0) {
                         $log.debug('playlist is empty!');
@@ -4664,9 +4673,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //first pause it
                 this.pause();
                 this.resetProgress();
-                $rootScope.$broadcast('track:progress', trackProgress);
+                /*$rootScope.$broadcast('track:progress', trackProgress);
                 $rootScope.$broadcast('currentTrack:position', 0);
-                $rootScope.$broadcast('currentTrack:duration', 0);
+                $rootScope.$broadcast('currentTrack:duration', 0);*/
                 soundManager.stopAll();
                 soundManager.unload(this.getCurrentTrack());
             },
@@ -5099,7 +5108,7 @@ ngSoundManager.directive('playAll', ['angularPlayer', '$log',
                         for(var i = 0; i < scope.songs.length; i++) {
                             angularPlayer.addTrack(scope.songs[i]);
                         }
-                        
+
                         if (attrs.play != 'false') {
                             //play first song
                             angularPlayer.play();
@@ -5165,7 +5174,7 @@ ngSoundManager.directive('playPauseToggle', ['angularPlayer',
                         }
                     }
                 });
-                
+
                 element.bind('click', function(event) {
                     if(angularPlayer.isPlayingStatus()) {
                         //if playing then pause
@@ -5173,7 +5182,7 @@ ngSoundManager.directive('playPauseToggle', ['angularPlayer',
                     } else {
                         //else play if not playing
                         angularPlayer.play();
-                        
+
                     }
                 });
             }
